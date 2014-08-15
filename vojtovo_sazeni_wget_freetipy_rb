@@ -3,7 +3,6 @@ require 'mechanize'
 require 'open-uri'
 require 'logger'
 
-
 def arrPrint(arr)
   arr.each_index do |i|
     if i%7 == 0
@@ -51,7 +50,7 @@ a.get('http://www.vojtovosazeni.cz/prihlaseni') do |page|
 end
 
 puts "FREE TIPY STATISTICS: page 2..12"
-puts "celkem prochranych: #{arrNotOK.count/7}"
+puts "celkem prochranych: #{arrNotOK.count/7}" #7 = count of <td> tags in <tr> <==> count of <tr> tags
 puts "celkem vyhranych: #{arrOK.count/7}"
 puts "cista vyhra +- #{win(arrOK)*1000 - (arrNotOK.count/7)*1000 - (arrOK.count/7)*1000}"
 
