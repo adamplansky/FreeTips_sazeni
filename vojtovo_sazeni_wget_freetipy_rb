@@ -5,17 +5,6 @@ require 'logger'
 
 
 def arrPrint(arr)
-  len = arr.count-1
-  for i in 0..len
-    if i%7 == 0
-      print "#{arr[i]}: "
-    elsif i%7 == 2
-      puts arr[i]
-    end
-  end
-end
-
-def arrPrint2(arr)
   arr.each_index do |i|
     if i%7 == 0
       print "#{arr[i]}: "
@@ -27,9 +16,8 @@ end
 
 
 def win(arr)
-   len = arr.count-1
-   sum = 0.0
-   for i in 0..len
+  sum = 0.0
+  arr.each_index do |i|
      if i%7 == 2
        sum += arr[i].to_f
      end
@@ -37,7 +25,11 @@ def win(arr)
    sum
 end
 
+#init
+arrOK = Array.new 
+arrNotOK = Array.new 
 a = Mechanize.new
+
 a.get('http://www.vojtovosazeni.cz/prihlaseni') do |page|
 
   #login
@@ -46,24 +38,22 @@ a.get('http://www.vojtovosazeni.cz/prihlaseni') do |page|
     form.password = ENV['SAZENI_PASSWORD']
   end.submit
   
-  #free tipy section
+  #free tipy sections
   free_tipy = a.click(my_page.link_with(:text => /Free tipy/))
   
-  arrOK = Array.new 
-  arrNotOK = Array.new 
-  
+  #iteration over all free tips sections except first section
   for i in 2..12
     free_tipy = a.click(free_tipy.link_with(:text => /#{i}/))
     html = free_tipy.body.delete "\n"
     html.scan(/<tr class="(green)">(.*?)<\/tr>/) {|w| w[1].scan(/<td>(.*?)<\/td>/){ |x| arrOK.concat x }  }
     html.scan(/<tr class="(red)">(.*?)<\/tr>/) {|w| w[1].scan(/<td>(.*?)<\/td>/){ |y| arrNotOK.concat y }  }
   end
-
-  puts "FREE TIPY STATISTICS: page 2..12"
-  puts "celkem prochranych: #{arrNotOK.count/7}"
-  puts "celkem vyhranych: #{arrOK.count/7}"
-  puts "cista vyhra +- #{win(arrOK)*1000 - (arrNotOK.count/7)*1000 - (arrOK.count/7)*1000}"
-  
-  
 end
+
+puts "FREE TIPY STATISTICS: page 2..12"
+puts "celkem prochranych: #{arrNotOK.count/7}"
+puts "celkem vyhranych: #{arrOK.count/7}"
+puts "cista vyhra +- #{win(arrOK)*1000 - (arrNotOK.count/7)*1000 - (arrOK.count/7)*1000}"
+
+
 
